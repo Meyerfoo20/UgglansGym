@@ -1,0 +1,62 @@
+body {
+  padding-bottom: 60px; /* Space for fixed navbar */
+}
+
+.jumbotron {
+  background: url('jumbo.jpg') bottom;
+  background-size: cover;
+  color: white;
+  text-shadow: 2px 2px 4px #000000;
+  height: 350px;
+}
+
+section {
+  padding: 60px 0;
+}
+
+footer {
+  background: #343a40;
+}
+
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+}
+
+.btn {
+  background-color: white;
+  color: #222;
+  border: solid #222 2px;
+  transition: 0.3s ease-in-out;
+  font-weight: bolder;
+}
+
+.btn:hover {
+  background-color: #222;
+  color: white;
+  border: solid #222 2px;
+}
+
+h1, h2, h5 {
+  color: #343a40;
+  font-weight: bolder;
+}
+
+.navbar {
+  background-color: #000 !important;
+}
+
+.btn-dark {
+  background-color: white;
+  border-color: #222;
+}
+
+
+.card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+.card-title {
+  color: #343a40;
+}

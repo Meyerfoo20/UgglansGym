@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Övningar</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="grund.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+        <a class="navbar-brand" href="index.html">Gym Hemsida</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Hem</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="gympass.html">Gympass</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="ovningar.html">Övningar</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="jumbotron jumbotron-fluid text-center">
+        <div class="container">
+            <h1 class="display-4" style="font-weight: bolder; color: white;">Övningar</h1>
+        </div>
+      </div>
+
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <button class="btn btn-dark filter-btn" data-category="allt">Allt</button>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <h4 class="text-center">Överkropp</h4>
+                <div class="list-group">
+                    <button class="list-group-item list-group-item-action filter-btn" data-category="overkropp-bröst">Bröst</button>
+                    <button class="list-group-item list-group-item-action filter-btn" data-category="overkropp-axlar">Axlar</button>
+                    <button class="list-group-item list-group-item-action filter-btn" data-category="overkropp-armar">Armar</button>
+                    <button class="list-group-item list-group-item-action filter-btn" data-category="overkropp-rygg">Rygg</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h4 class="text-center">Ben</h4>
+                <div class="list-group">
+                    <button class="list-group-item list-group-item-action filter-btn" data-category="ben-lår">Lår</button>
+                    <button class="list-group-item list-group-item-action filter-btn" data-category="ben-vader">Vader</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h4 class="text-center">Cardio</h4>
+                <div class="list-group">
+                    <button class="list-group-item list-group-item-action filter-btn" data-category="cardio-kondition">Kondition</button>
+                    <button class="list-group-item list-group-item-action filter-btn" data-category="cardio-spänst">Spänst</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="exerciseList" class="row">
+            <!-- Övningar listas här -->
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const exerciseList = document.getElementById('exerciseList');
+            const exercises = [
+                {name: 'Armhävningar', category: 'overkropp-bröst'},
+                {name: 'Bänkpress', category: 'overkropp-bröst'},
+                {name: 'Hantelflyes', category: 'overkropp-bröst'},
+                {name: 'Liggande hantelpress', category: 'overkropp-bröst'},
+
+                {name: 'Axelpress', category: 'overkropp-axlar'},
+                {name: 'Omvända hantelflyes', category: 'overkropp-axlar'},
+                {name: 'Framåtlyft med hantlar', category: 'overkropp-axlar'},
+                
+                {name: 'French press med hantel', category: 'overkropp-armar'},
+                {name: 'Biceps Curl', category: 'overkropp-armar'},
+                {name: 'Hammer Curl', category: 'overkropp-armar'},
+                {name: 'Skivstång Curl', category: 'overkropp-armar'},
+
+                {name: 'Hantelrodd', category: 'overkropp-rygg'},
+                {name: 'Marklyft', category: 'overkropp-rygg'},
+                {name: 'Skivstångsrodd', category: 'overkropp-rygg'},
+
+                {name: 'Knäböj', category: 'ben-lår'},
+                {name: 'Bulgarien Splitsquat', category: 'ben-lår'},
+                {name: 'Knäböj med skivstång', category: 'ben-lår'},
+                {name: 'Boxböj', category: 'ben-lår'},
+                {name: 'Utfall med skivstång', category: 'ben-lår'},
+
+                {name: 'Tåhävningar med skivstång', category: 'ben-vader'},
+                {name: 'Sittande vadpress', category: 'ben-vader'},
+
+                {name: 'Crosstrainer', category: 'cardio-kondition'},
+                {name: 'X - hopp', category: 'cardio-kondition'},
+            ];
+
+            function displayExercises(category) {
+                exerciseList.innerHTML = '';
+                exercises.filter(exercise => category === 'allt' || exercise.category === category).forEach(exercise => {
+                    let col = document.createElement('div');
+                    col.classList.add('col-md-4');
+                    col.innerHTML = `
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">${exercise.name}</h5>
+                                <button class="btn btn-dark add-to-workout" data-exercise="${exercise.name}">Lägg till</button>
+                            </div>
+                        </div>
+                    `;
+                    exerciseList.appendChild(col);
+                });
+
+                document.querySelectorAll('.add-to-workout').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const exercise = button.getAttribute('data-exercise');
+                        let workout = localStorage.getItem('workout') ? JSON.parse(localStorage.getItem('workout')) : [];
+                        workout.push(exercise);
+                        localStorage.setItem('workout', JSON.stringify(workout));
+                        alert(`${exercise} har lagts till i ditt gympass!`);
+                    });
+                });
+            }
+
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const category = button.getAttribute('data-category');
+                    displayExercises(category);
+                });
+            });
+
+            displayExercises('allt');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gympass</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="grund.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+        <a class="navbar-brand" href="index.html">Gym Hemsida</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Hem</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="gympass.html">Gympass</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="övningar.html">Övningar</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="jumbotron jumbotron-fluid text-center">
+        <div class="container">
+            <h1 class="display-4" style="font-weight: bolder; color: white;">Gympass</h1>
+        </div>
+      </div>
+
+    <div class="container mt-5">
+        <button id="startWorkout" class="btn btn-primary btn-block mb-4">Starta Gympass</button>
+        <button id="endWorkout" class="btn btn-danger btn-block mb-4" style="display: none;">Avsluta Gympass</button>
+        <div id="workoutContainer">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Övning</th>
+                        <th id="statusHeader">Åtgärd</th>
+                    </tr>
+                </thead>
+                <tbody id="workoutList">
+                    <!-- Gympass listas här -->
+                </tbody>
+            </table>
+            <div class="mt-5" id="chartContainer" style="display: none;">
+                <canvas id="progressChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startWorkoutButton = document.getElementById('startWorkout');
+            const endWorkoutButton = document.getElementById('endWorkout');
+            const workoutContainer = document.getElementById('workoutContainer');
+            const workoutList = document.getElementById('workoutList');
+            const progressChartCanvas = document.getElementById('progressChart');
+            const statusHeader = document.getElementById('statusHeader');
+            const chartContainer = document.getElementById('chartContainer');
+            let workout = localStorage.getItem('workout') ? JSON.parse(localStorage.getItem('workout')) : [];
+            let completedExercises = 0;
+            let progressChart;
+
+            function renderWorkout(isWorkoutStarted = false) {
+                workoutList.innerHTML = '';
+                workout.forEach((exercise, index) => {
+                    let row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${exercise}</td>
+                        <td>
+                            ${isWorkoutStarted ? `
+                                <div class="form-check">
+                                    <input class="form-check-input exercise-check" type="checkbox" id="exercise${index}" data-exercise="${exercise}">
+                                </div>
+                            ` : `
+                                <button class="btn btn-dark remove-from-workout" data-exercise="${exercise}">Ta bort</button>
+                            `}
+                        </td>
+                    `;
+                    workoutList.appendChild(row);
+                });
+
+                if (!isWorkoutStarted) {
+                    document.querySelectorAll('.remove-from-workout').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const exercise = button.getAttribute('data-exercise');
+                            workout = workout.filter(item => item !== exercise);
+                            localStorage.setItem('workout', JSON.stringify(workout));
+                            renderWorkout();
+                        });
+                    });
+                } else {
+                    document.querySelectorAll('.exercise-check').forEach(checkbox => {
+                        checkbox.addEventListener('change', () => {
+                            if (checkbox.checked) {
+                                completedExercises++;
+                            } else {
+                                completedExercises--;
+                            }
+                            updateChart();
+                        });
+                    });
+                }
+            }
+
+            function updateChart() {
+                const percentage = workout.length > 0 ? Math.round((completedExercises / workout.length) * 100) : 0;
+                const data = {
+                    labels: ['Klar', 'Ej klar'],
+                    datasets: [{
+                        data: [completedExercises, workout.length - completedExercises],
+                        backgroundColor: ['#4caf50', '#f44336']
+                    }]
+                };
+
+                if (progressChart) {
+                    progressChart.destroy();
+                }
+
+                progressChart = new Chart(progressChartCanvas, {
+                    type: 'doughnut',
+                    data: data,
+                    plugins: [ChartDataLabels],
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            datalabels: {
+                                display: true,
+                                formatter: (value, context) => {
+                                    if (context.dataIndex === 0) {
+                                        return `${percentage}%`;
+                                    } else {
+                                        return '';
+                                    }
+                                },
+                                color: '#000',
+                                font: {
+                                    weight: 'bold',
+                                    size: '16'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            startWorkoutButton.addEventListener('click', () => {
+                startWorkoutButton.style.display = 'none';
+                endWorkoutButton.style.display = 'block';
+                chartContainer.style.display = 'block';
+                statusHeader.textContent = 'Klar';
+                renderWorkout(true);
+                updateChart();
+            });
+
+            endWorkoutButton.addEventListener('click', () => {
+                startWorkoutButton.style.display = 'block';
+                endWorkoutButton.style.display = 'none';
+                chartContainer.style.display = 'none';
+                statusHeader.textContent = 'Åtgärd';
+                completedExercises = 0;
+                renderWorkout();
+            });
+
+            if (workout.length > 0) {
+                renderWorkout();
+            }
+        });
+    </script>
+</body>
+</html>
