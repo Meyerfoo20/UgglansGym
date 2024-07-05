@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Träningspass</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #121212;
+            color: #f5f5f5;
+        }
+        .table {
+            background-color: #1f1f1f;
+        }
+        .table th, .table td {
+            color: #f5f5f5;
+        }
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#00ff44 var(--progress), #ff0000 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .container {
+            background-color: #1f1f1f;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .table-hover tbody tr:hover {
+            background-color: #2a2a2a;
+        }
+        .form-check-input:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div id="root" class="container mt-5"></div>
+
+    <!-- React and ReactDOM -->
+    <script src="https://unpkg.com/react/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom/umd/react-dom.development.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- React Code -->
+    <script type="text/babel">
+        const { useState } = React;
+
+        function GymApp() {
+            const exercises = [
+                { id: 1, name: "Bänkpress" },
+                { id: 2, name: "Knäböj" },
+                { id: 3, name: "Marklyft" },
+                { id: 4, name: "Militärpress" },
+                { id: 5, name: "Rodd" }
+            ];
+
+            const [completedExercises, setCompletedExercises] = useState([]);
+
+            const handleCheckboxChange = (exerciseId) => {
+                setCompletedExercises((prev) =>
+                    prev.includes(exerciseId)
+                        ? prev.filter((id) => id !== exerciseId)
+                        : [...prev, exerciseId]
+                );
+            };
+
+            const progress = (completedExercises.length / exercises.length) * 100;
+
+            return (
+                <div>
+                    <h1 className="text-center mb-4">Träningspass</h1>
+                    <div className="d-flex justify-content-center mb-4">
+                        <div className="progress-circle" style={{ "--progress": `${progress}%` }}>
+                            {Math.round(progress)}%
+                        </div>
+                    </div>
+                    <table className="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Övning</th>
+                                <th scope="col">Klar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {exercises.map((exercise) => (
+                                <tr key={exercise.id}>
+                                    <th scope="row">{exercise.id}</th>
+                                    <td>{exercise.name}</td>
+                                    <td>
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                checked={completedExercises.includes(exercise.id)}
+                                                onChange={() => handleCheckboxChange(exercise.id)}
+                                            />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<GymApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
