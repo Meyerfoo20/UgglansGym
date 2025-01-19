@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+    (function(){
+        emailjs.init("M8hlcCoiJItfe70PT");  // Ersätt med din riktiga public key om den är annorlunda
+    })();
+    </script>
+    <title>UgglansGym</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Din CSS-kod här */
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">UgglansGym</div>
+        <div class="links">
+            <a href="#">Hem</a>
+            <a href="#">Produkter</a>
+            <a href="#">Om oss</a>
+        </div>
+    </div>
+
+    <div class="container" id="authSection">
+        <h1 id="authTitle">Logga In</h1>
+        <form id="authForm">
+            <label for="email">E-post:</label><br>
+            <input type="email" id="email" name="email" required><br><br>
+            <button type="submit">Logga In</button>
+        </form>
+        <p id="switchMode">Har du inget konto? <span style="color: #ffe100; cursor:pointer;" id="createAccount">Skapa konto här</span>.</p>
+    </div>
+
+    <div class="container" id="profile" style="display:none;">
+        <h2>Välkommen, <span id="displayName"></span>!</h2>
+        <p>E-post: <span id="displayEmail"></span></p>
+        <p>50% Kupong Progress:</p>
+        <div class="calendar" id="purchaseCalendar"></div>
+        <p id="couponMessage" style="color:green; display:none;">Du har en aktiv kupong! 50% rabatt på nästa köp.</p>
+    </div>
+
+    <div class="products" id="productList"></div>
+
+    <footer>
+        <p>&copy; 2025 UgglansGym. Alla rättigheter förbehållna.</p>
+    </footer>
+
+    <script>
+        emailjs.init("M8hlcCoiJItfe70PT");
+
+        const authSection = document.getElementById('authSection');
+        const profileDiv = document.getElementById('profile');
+        const displayName = document.getElementById('displayName');
+        const displayEmail = document.getElementById('displayEmail');
+        const purchaseCalendar = document.getElementById('purchaseCalendar');
+        const couponMessage = document.getElementById('couponMessage');
+        const productList = document.getElementById('productList');
+
+        let isLoginMode = true;
+        let couponActive = false;
+        let purchases = 0;
+        const products = [
+            { id: 1, title: "Grand Sour", price: 18, image: "Produkter/GrandSour.png" },
+            { id: 2, title: "Ramonade", price: 18, image: "Produkter/Ramonade.png" },
+            { id: 3, title: "Berruba", price: 18, image: "Produkter/Berruba.png" },
+            { id: 4, title: "Juicy Melba", price: 18, image: "Produkter/JuicyMelba.png" },
+        ];
+
+        function saveProfile(email, purchases, couponActive) {
+            const profile = {
+                email: email,
+                purchases: purchases,
+                couponActive: couponActive
+            };
+            localStorage.setItem('profile', JSON.stringify(profile));
+        }
+
+        function loadProfile() {
+            const savedProfile = JSON.parse(localStorage.getItem('profile'));
+            if (savedProfile) {
+                displayEmail.textContent = savedProfile.email;
+                purchases = savedProfile.purchases;
+                couponActive = savedProfile.couponActive;
+
+                renderCalendar();
+                renderProducts();
+
+                if (couponActive) {
+                    couponMessage.style.display = 'block';
+                } else {
+                    couponMessage.style.display = 'none';
+                }
+
+                authSection.style.display = 'none';
+                profileDiv.style.display = 'block';
+            }
+        }
+
+        function renderCalendar() {
+            purchaseCalendar.innerHTML = "";
+            for (let i = 1; i <= 5; i++) {
+                const day = document.createElement('div');
+                day.textContent = `Köpt ${i}`;
+                if (i <= purchases % 5) {
+                    day.classList.add('active');
+                }
+                purchaseCalendar.appendChild(day);
+            }
+        }
+
+        function renderProducts() {
+            productList.innerHTML = "";
+            products.forEach(product => {
+                let finalPrice = product.price;
+                if (couponActive) {
+                    finalPrice = product.price * 0.5;
+                }
+
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="${product.title}">
+                    <h3>${product.title}</h3>
+                    <p><strong>Pris:</strong> ${finalPrice} kr</p>
+                    <button onclick="purchaseProduct(${product.id})">Köp nu</button>
+                `;
+
+                productList.appendChild(productDiv);
+            });
+        }
+
+        function sendEmailReceipt(email, product, finalPrice) {
+            const templateParams = {
+                email: email,
+                product_name: product.title,
+                product_price: finalPrice
+            };
+
+            emailjs.send("service_c75qe0v", "template_xf1q5it", templateParams)
+                .then(response => {
+                    console.log("E-post skickat!", response);
+                    alert("Tack för ditt köp! Ett e-postmeddelande har skickats.");
+                }, error => {
+                    console.error("E-post skickades inte!", error);
+                    alert("Det gick inte att skicka e-post. Försök igen senare.");
+                });
+        }
+
+        function purchaseProduct(productId) {
+            const purchasedProduct = products.find(product => product.id === productId);
+            let finalPrice = purchasedProduct.price;
+
+            if (couponActive) {
+                finalPrice = purchasedProduct.price * 0.5;
+            }
+
+            purchases++;
+
+            if (purchases === 5) {
+                couponActive = true;
+                couponMessage.style.display = 'block';
+            }
+
+            if (purchases > 5) {
+                purchases = 0;
+                couponActive = false;
+                couponMessage.style.display = 'none';
+            }
+
+            saveProfile(displayEmail.textContent, purchases, couponActive);
+            renderCalendar();
+            renderProducts();
+            sendEmailReceipt(displayEmail.textContent, purchasedProduct, finalPrice);
+        }
+
+        authForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+
+            if (isLoginMode) {
+                const savedProfile = JSON.parse(localStorage.getItem('profile'));
+                if (savedProfile && savedProfile.email === email) {
+                    loadProfile();
+                } else {
+                    alert('Inget konto hittades med den här e-posten.');
+                }
+            } else {
+                saveProfile(email, 0, false);
+                loadProfile();
+            }
+        });
+
+        window.onload = loadProfile;
+        renderProducts();
+    </script>
+</body>
+</html>
