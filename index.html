@@ -12,17 +12,41 @@
     <title>UgglansGym</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Din CSS-kod här */
+        .jumbotron {
+            background: url('header.png') no-repeat center center; /* Bakgrundsbild */
+            background-size: cover; /* Täck hela området */
+            margin-bottom: 50px;
+            height: 700px;
+            display: flex; /* Gör att innehållet kan centreras */
+            align-items: center; /* Vertikal centrering */
+            justify-content: center; /* Horisontell centrering */
+            position: relative; /* För eventuella ytterligare innehåll eller overlays */
+        }
+
+        .jumbotron-title {
+            font-size: 4rem; /* Justera storlek efter behov */
+            color: white; /* Textfärg */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Skugga för läsbarhet */
+            text-align: center; /* Centrera texten */
+            margin: 0;
+        }
+        @media (max-width: 768px) {
+            .jumbotron-title {
+                font-size: 2rem; /* Justera storlek efter behov */
+            }
+        }
     </style>
 </head>
 <body>
     <div class="navbar">
         <div class="logo">UgglansGym</div>
         <div class="links">
-            <a href="#">Hem</a>
-            <a href="#">Produkter</a>
-            <a href="#">Om oss</a>
+            <a href="index.html">Produkter</a>
         </div>
+    </div>
+
+    <div class="jumbotron">
+        <h1 class="jumbotron-title">Våra Produkter</h1>
     </div>
 
     <div class="container" id="authSection">
@@ -49,7 +73,7 @@
     
 
     <div class="container" id="profile" style="display:none;">
-        <h2>Välkommen, <span id="displayName"></span>!</h2>
+        <h2>Välkommen!</h2>
         <p>E-post: <span id="displayEmail"></span></p>
         <p>50% Kupong Progress:</p>
         <div class="calendar" id="purchaseCalendar"></div>

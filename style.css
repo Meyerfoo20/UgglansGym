@@ -11,7 +11,6 @@ body {
     height: 100px;
     background-color: #ffe100;
     color: #222;
-    margin-bottom: 50px;
     padding: 0px 20px;
 }
 .navbar .logo {
@@ -44,7 +43,7 @@ body {
     margin-top: 20px;
 }
 .calendar div {
-    padding: 20px;
+    padding: 10px;
     text-align: center;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -74,7 +73,6 @@ body {
     padding: 15px;
     margin-bottom: 50px;
 }
-
 .product:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
@@ -113,4 +111,75 @@ footer {
     color: #fff;
     text-align: center;
     padding: 20px 0;
+}
+
+/* Responsiv styling */
+@media (max-width: 1024px) {
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        text-align: center;
+    }
+    .navbar .links {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .jumbotron {
+        height: 500px;
+    }
+    .jumbotron-title {
+        font-size: 2.5rem;
+    }
+    .container {
+        max-width: 90%;
+        padding: 15px;
+    }
+    .products {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .product img {
+        width: 80px;
+    }
+}
+@media (max-width: 768px) {
+    .navbar .logo {
+        font-size: 18px;
+    }
+    .navbar .links {
+        gap: 5px;
+    }
+    .jumbotron {
+        height: 350px;
+    }
+    .jumbotron-title {
+        font-size: 2rem;
+    }
+    .container {
+        max-width: 100%;
+        padding: 10px;
+    }
+    .product img {
+        width: 60px;
+    }
+    .product button {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+}
+@media (max-width: 480px) {
+    .navbar {
+        padding: 10px;
+    }
+    .jumbotron {
+        height: 250px;
+    }
+    .jumbotron-title {
+        font-size: 1.5rem;
+    }
+    .product h3 {
+        font-size: 14px;
+    }
+    .product p {
+        font-size: 12px;
+    }
 }
