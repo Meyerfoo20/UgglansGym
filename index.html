@@ -26,14 +26,27 @@
     </div>
 
     <div class="container" id="authSection">
-        <h1 id="authTitle">Logga In</h1>
-        <form id="authForm">
-            <label for="email">E-post:</label><br>
-            <input type="email" id="email" name="email" required><br><br>
-            <button type="submit">Logga In</button>
-        </form>
-        <p id="switchMode">Har du inget konto? <span style="color: #ffe100; cursor:pointer;" id="createAccount">Skapa konto här</span>.</p>
+        <div id="loginBlock" style="display: none;">
+            <h1>Logga In</h1>
+            <form id="loginForm">
+                <label for="loginEmail">E-post:</label><br>
+                <input type="email" id="loginEmail" name="email" required><br><br>
+                <button type="submit">Logga In</button>
+            </form>
+            <p>Har du inget konto? <span style="color: #ffe100; cursor:pointer;" onclick="switchToCreateAccount()">Skapa konto här</span>.</p>
+        </div>
+    
+        <div id="createAccountBlock" style="display: none;">
+            <h1>Skapa Konto</h1>
+            <form id="createAccountForm">
+                <label for="createEmail">E-post:</label><br>
+                <input type="email" id="createEmail" name="email" required><br><br>
+                <button type="submit">Skapa Konto</button>
+            </form>
+            <p>Har du redan ett konto? <span style="color: #ffe100; cursor:pointer;" onclick="switchToLogin()">Logga in här</span>.</p>
+        </div>
     </div>
+    
 
     <div class="container" id="profile" style="display:none;">
         <h2>Välkommen, <span id="displayName"></span>!</h2>
@@ -59,8 +72,11 @@
         const purchaseCalendar = document.getElementById('purchaseCalendar');
         const couponMessage = document.getElementById('couponMessage');
         const productList = document.getElementById('productList');
+        const loginBlock = document.getElementById('loginBlock');
+        const createAccountBlock = document.getElementById('createAccountBlock');
+        const loginForm = document.getElementById('loginForm');
+        const createAccountForm = document.getElementById('createAccountForm');
 
-        let isLoginMode = true;
         let couponActive = false;
         let purchases = 0;
         const products = [
@@ -97,6 +113,8 @@
 
                 authSection.style.display = 'none';
                 profileDiv.style.display = 'block';
+            } else {
+                productList.style.display = 'none'; // Dölj produkterna om inte inloggad
             }
         }
 
@@ -139,7 +157,6 @@
                 productList.appendChild(productDiv);
             });
         }
-
 
         function sendEmailReceipt(email, product, finalPrice) {
             const templateParams = {
@@ -185,25 +202,50 @@
             sendEmailReceipt(displayEmail.textContent, purchasedProduct, finalPrice);
         }
 
-        authForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
+        function switchToLogin() {
+            createAccountBlock.style.display = 'none';
+            loginBlock.style.display = 'block';
+        }
 
-            if (isLoginMode) {
-                const savedProfile = JSON.parse(localStorage.getItem('profile'));
-                if (savedProfile && savedProfile.email === email) {
-                    loadProfile();
-                } else {
-                    alert('Inget konto hittades med den här e-posten.');
-                }
-            } else {
-                saveProfile(email, 0, false);
+        function switchToCreateAccount() {
+            loginBlock.style.display = 'none';
+            createAccountBlock.style.display = 'block';
+        }
+
+        function initializeAuthSection() {
+            const savedProfile = JSON.parse(localStorage.getItem('profile'));
+            if (savedProfile) {
+                authSection.style.display = 'none';
                 loadProfile();
+            } else {
+                authSection.style.display = 'block';
+                switchToCreateAccount(); // Visa "Skapa Konto" om ingen profil finns
+            }
+        }
+
+        // Hantera inloggningsformuläret
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const savedProfile = JSON.parse(localStorage.getItem('profile'));
+            if (savedProfile && savedProfile.email === email) {
+                loadProfile();
+            } else {
+                alert('Inget konto hittades med den här e-posten.');
             }
         });
 
-        window.onload = loadProfile;
-        renderProducts();
+        // Hantera skapande av konto
+        createAccountForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = document.getElementById('createEmail').value;
+            saveProfile(email, 0, false);
+            loadProfile();
+        });
+
+        // Initiera autentisering vid sidladdning
+        window.onload = initializeAuthSection;
+
     </script>
 </body>
 </html>
