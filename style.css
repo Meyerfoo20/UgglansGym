@@ -16,7 +16,7 @@ body {
 .navbar .logo {
     font-size: 20px;
     font-weight: bolder;
-    margin: 20px 0px;
+    margin-left: 30px;
 }
 .navbar .links {
     display: flex;
@@ -24,7 +24,7 @@ body {
 }
 .navbar .links a {
     text-decoration: none;
-    margin: 20px 0px;
+    margin: 30px 30px;
     color: #222;
 }
 .container {
