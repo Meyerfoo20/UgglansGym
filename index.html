@@ -113,7 +113,13 @@
         }
 
         function renderProducts() {
-            productList.innerHTML = "";
+            if (!localStorage.getItem('profile')) {
+                productList.style.display = 'none'; // Dölj produkterna om inte inloggad
+                return;
+            }
+
+            productList.style.display = 'block'; // Visa produkterna om inloggad
+            productList.innerHTML = ""; // Töm tidigare produkter
             products.forEach(product => {
                 let finalPrice = product.price;
                 if (couponActive) {
@@ -133,6 +139,7 @@
                 productList.appendChild(productDiv);
             });
         }
+
 
         function sendEmailReceipt(email, product, finalPrice) {
             const templateParams = {

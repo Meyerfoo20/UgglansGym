@@ -1,5 +1,5 @@
 body {
-    font-family: Apple Chancery, cursive;
+    font-family: Luminari, cursive;
     margin: 0;
     padding: 0;
     background-color: #f4f4f9;
@@ -55,7 +55,7 @@ body {
     color: white;
 }
 .products {
-    max-width: 1200px;
+    max-width: 300px;
     margin: 20px auto;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -72,7 +72,9 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
     padding: 15px;
+    margin-bottom: 50px;
 }
+
 .product:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
